@@ -1,0 +1,35 @@
+version: "3.5"
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: ./Dockerfile
+    container_name: app_nginx
+    links: ["client"]
+    depends_on: ["client"]
+    networks:
+      - default
+    ports: ["80:80"]
+    restart: always
+    volumes:
+      - nginx:/var/www/app
+  client:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      args:
+        ENV: production
+
+    container_name: app_client
+    networks: ["default"]
+    volumes:
+      - /app/node_modules
+      - ./build:/app/
+
+volumes:
+  nginx:
+
+networks:
+  default:
+    name: server
+    driver: bridge

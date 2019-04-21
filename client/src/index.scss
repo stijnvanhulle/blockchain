@@ -1,0 +1,27 @@
+@import '../node_modules/@bluefrontend/bf-component-library/dist/style.css';
+
+body{
+  background: $background;
+  font-family: 'Quicksand', sans-serif;
+  font-size:13px;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  float: left;
+  width: 100%;
+  main{
+    display: flex;
+    width: 100%;
+    position: relative;
+    flex-direction: column;
+  }
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}

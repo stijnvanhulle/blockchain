@@ -1,0 +1,64 @@
+version: '3.5'
+services:
+  app1:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        PORT: 80
+        PROXY: http://localhost:3001
+    networks:
+      - default
+    ports: ["3000:80"]
+    restart: always
+  node1:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - CURRENT_PEER=node1:6000
+      - PEERS=ws://node2:6001
+      - P2P_PORT=6000
+      - CORS_WHITELIST=http://localhost
+      - MINER_PRIVATE=7c4c45907dec40c91bab3480c39032e90049f1a44f3e18c3e07c23e3273995cf
+    ports:
+      - '3001:3000'
+      - '6000:6000'
+    restart: always
+    networks: ["default"]
+    volumes:
+      - /app/node_modules
+
+  app2:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        PORT: 80
+        PROXY: http://localhost:4001
+    networks:
+      - default
+    ports: ["4000:80"]
+    restart: always
+  node2:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - CURRENT_PEER=node2:6001
+      - PEERS=ws://node1:6000
+      - P2P_PORT=6000
+      - CORS_WHITELIST=http://localhost
+      - MINER_PRIVATE=11bc4a3c5937a5e29eccfd6730c3ba0c37362c38a64d961d68e3a62d07cd1eb9
+    ports:
+      - '4001:3000'
+      - '6001:6000'
+    restart: always
+    volumes:
+      - /app/node_modules
+
+
+networks:
+  default:
+    name: server
+    driver: bridge

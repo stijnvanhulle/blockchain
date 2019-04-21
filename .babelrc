@@ -1,0 +1,12 @@
+{
+  "presets": ["stage-0", "es2015", "env"],
+  "plugins": [
+    "transform-object-rest-spread",
+    "transform-class-properties",
+    "transform-decorators-legacy",
+    "transform-runtime"
+  ],
+  "env": {
+    "development": {}
+  }
+}

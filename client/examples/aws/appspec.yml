@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /tmp
+hooks:
+  BeforeInstall:
+    - location: build_scripts/aws/install_dependencies.sh
+      timeout: 1800
+      runas: ec2-user
+  ApplicationStart:
+    - location: build_scripts/aws/start_server.sh
+      timeout: 1800
+      runas: ec2-user
+  ApplicationStop:
+    - location: build_scripts/aws/kill_server.sh
+      timeout: 500
+      runas: ec2-user
+

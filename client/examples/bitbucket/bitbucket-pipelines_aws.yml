@@ -1,0 +1,58 @@
+options:
+  docker: true
+
+pipelines:
+  default:
+    - step:
+        name: Build and test
+        image: node:latest
+        caches:
+          - node
+        script:
+          - . build_scripts/bitbucket/setEnv.sh
+          - npm install
+          - npm test
+          - npm run build
+    - step:
+        name: Build and push to S3
+        image: xueshanf/awscli:latest
+        caches:
+          - pip
+          - node
+        trigger: manual
+        script:
+          - . build_scripts/bitbucket/setEnv.sh
+          - . build_scripts/bitbucket/setS3.sh
+          - aws deploy push --application-name $APPLICATION_NAME --s3-location $s3_location --no-ignore-hidden-files
+    - step:
+        name: Deploy to aws
+        caches:
+          - pip
+          - node
+        trigger: manual
+        deployment: production
+        script:
+          - . build_scripts/bitbucket/setS3.sh
+          - aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-config-name $DEPLOYMENT_CONFIG --deployment-group-name $DEPLOYMENT_GROUP_NAME --s3-location bucket=$S3_BUCKET,bundleType=zip,key=$s3_key
+
+  branches:
+    master:
+      - step:
+        name: Build and test
+        image: node:latest
+        caches:
+          - node
+        script:
+          - . build_scripts/bitbucket/setEnv.sh
+          - npm install
+          - npm test
+          - npm run build
+      - step:
+          name: Deploy to aws
+          caches:
+            - node
+          script:
+            - . build_scripts/bitbucket/setEnv.sh
+            - . build_scripts/bitbucket/setS3.sh
+            - aws deploy push --application-name $APPLICATION_NAME --s3-location $s3_location --no-ignore-hidden-files
+            - aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-config-name $DEPLOYMENT_CONFIG --deployment-group-name $DEPLOYMENT_GROUP_NAME --s3-location bucket=$S3_BUCKET,bundleType=zip,key=$s3_key

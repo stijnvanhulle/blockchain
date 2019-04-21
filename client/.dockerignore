@@ -1,0 +1,9 @@
+.circleci
+.git
+.vscode
+coverage
+node_modules
+tests
+typings
+src/**/*.ts
+src/**/*.js.map
